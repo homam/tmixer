@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script type="text/javascript" src="js/channel.js"></script>
+    <script type="text/javascript" src="js/_.js"></script>
+    <script type="text/javascript" src="js/jquery-1.7.js"></script>
+    <style type="text/css">
+        #matrix {
+            width: 800px;
+            height: 600px;
+            outline: solid 2px black;
+            margin: auto;
+            position: relative;
+        }
+
+            #matrix button {
+                outline: solid 1px gray;
+                border: 0;
+                position: absolute;
+            }
+    </style>
+</head>
+<body>
+    <div id="matrix">
+
+    </div>
+    
+    <script type="text/javascript">
+        $(function () {
+            var matrix = $("#matrix");
+            var width = matrix.width();
+            var height = matrix.height();
+            var stepsCount = 10;
+            var notesCount = 18;
+            var noteHeight = height / notesCount;
+            var noteWidth = noteHeight;
+            for (var i = 0; i < stepsCount; i++) {
+                for (var j = 0; j < notesCount; j++) {
+                    var top = j * noteHeight;
+                    var left = i * noteWidth;
+                    var tone = $("<button></button>");
+                    tone.css("top", top + "px");
+                    tone.css("left", left + "px");
+                    tone.height(noteHeight);
+                    tone.width(noteWidth);
+                    tone[0]['data-src'] =  'audio/dub-' + j.toString() + '.ogg';
+                    
+                    //tone[0].channel = channel;
+                    tone.click(function (ev) {
+                        var channel = new Channel(true, true, ev.target['data-src']);
+                        console.log(ev.target['data-src']);
+                    });
+                    matrix.append(tone);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
