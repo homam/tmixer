@@ -1,12 +1,11 @@
-﻿channelsPool = function () {
+﻿ChannelsPool = function () {
     this.channels = {};
 };
 
-channelsPool.prototype.addChannel = function (ch) {
+ChannelsPool.prototype.addChannel = function (ch) {
     this.channels[ch.id] = ch;
 };
-
-channelsPool.prototype.play = function (src, loop) {
+ChannelsPool.prototype.play = function (src, loop) {
     for (var chName in this.channels) {
         var ch = this.channels[chName];
         if (ch.play(src, loop))
@@ -15,7 +14,7 @@ channelsPool.prototype.play = function (src, loop) {
 
     // all channels are busy
 
-    var ch = new channel();
+    var ch = new Channel();
     this.addChannel(ch);
     ch.play(src, loop);
 };

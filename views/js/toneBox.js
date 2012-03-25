@@ -20,7 +20,7 @@ ToneBox.prototype.play = function () {
 
     
     if (!this.channel) {
-        this.channel = new channel(this.src, false);
+        this.channel = new Channel(this.src, false);
     }
 
     this.channel.play();

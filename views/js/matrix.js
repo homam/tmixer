@@ -11,7 +11,7 @@ Matrix = function (columns, rows, sound) {
     })();
 
     this.speed = .5;
-
+    this.isPlaying = false;
 };
 
 Matrix.prototype.getBox = function (row, col) {
@@ -37,5 +37,19 @@ Matrix.prototype.play = function () {
     };
 
     this._timer = setTimeout(playCol, this.speed * 1000);
+    this.isPlaying = true;
 
+};
+
+Matrix.prototype.stop = function () {
+    clearTimeout(this._timer);
+    this.isPlaying = false;
+};
+
+Matrix.prototype.toggle = function () {
+    if (this.isPlaying) {
+        this.stop();
+    } else {
+        this.play();
+    }
 };

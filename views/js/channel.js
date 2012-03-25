@@ -1,4 +1,4 @@
-﻿var channel = function (src, autoRelease) {
+﻿var Channel = function (src, autoRelease) {
 
     this.audio = !!src ? new Audio(src) : new Audio();
     this.busy = false;
@@ -20,14 +20,14 @@
     this.id = Math.random();
 };
 
-channel.prototype.stop = function () {
+Channel.prototype.stop = function () {
     this.audio.pause();
     this.busy = false;
     this.audio.currentTime = 0;
 };
 
 
-channel.prototype.play = function (src, loop) {
+Channel.prototype.play = function (src, loop) {
 
     if (this.autoRelease && this.busy) return false;
 
