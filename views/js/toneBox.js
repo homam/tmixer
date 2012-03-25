@@ -1,20 +1,20 @@
 ﻿/// <reference path="channel.js" />
 
-toneBox = function (src) {
+ToneBox = function (src) {
     this.src = src;
     this.channel = null;
     this.active = false;
 };
 
-toneBox.prototype.activate = function () {
+ToneBox.prototype.activate = function () {
     this.active = true;
 };
 
-toneBox.prototype.deactivate = function () {
+ToneBox.prototype.deactivate = function () {
     this.active = false;
 };
 
-toneBox.prototype.play = function () {
+ToneBox.prototype.play = function () {
 
     if (!this.active) return false;
 

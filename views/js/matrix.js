@@ -1,11 +1,11 @@
 ﻿/// <reference path="column.js" />
-matrix = function (columns, rows, sound) {
+Matrix = function (columns, rows, sound) {
     this.notes = rows;
     this.steps = columns;
     this.columns = (function () {
         var arr = [];
         for (var i = 0; i < columns; i++) {
-            arr.push(new column(rows, sound));
+            arr.push(new Column(rows, sound));
         }
         return arr;
     })();
@@ -14,12 +14,12 @@ matrix = function (columns, rows, sound) {
 
 };
 
-matrix.prototype.getBox = function (row, col) {
+Matrix.prototype.getBox = function (row, col) {
     return this.columns[col].getBox(row);
 }
 
 
-matrix.prototype.play = function () {
+Matrix.prototype.play = function () {
 
     var col = -1;
     var self = this;
