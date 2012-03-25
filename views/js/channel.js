@@ -1,37 +1,42 @@
-﻿Channel = function Channel(autoPlay, loop, src) {
-    this.audio = new Audio();
-    this.playing = false;
+﻿var channel = function (src, autoRelease) {
+
+    this.audio = !!src ? new Audio(src) : new Audio();
+    this.busy = false;
+    this.autoRelease = !!autoRelease;
+
     var self = this;
-    this.audio.autoplay = !!autoPlay;
-    this.audio.loop = !!loop;
-    if (!!src)
-        this.audio.src = src;
-    this.audio.addEventListener('ended', function () {
-        self.playing = false;
-    }, false);
-};
+    this.audio.addEventListener('play', function () {
+        self.busy = true;
+    });
 
-Channel.prototype.play = function Channel$start(src) {
-    if (this.playing) {
-        return false;
-    } else {
-        this.playing = true;
-        if (!!src)
-            this.audio.src = src;
+    if (this.autoRelease) {
+
+        this.audio.addEventListener('ended', function () {
+            self.busy = false;
+        });
+
     }
+
+    this.id = Math.random();
 };
 
-Channel.prototype.stop = function Channel$stop() {
+channel.prototype.stop = function () {
     this.audio.pause();
-    this.playing = false;
+    this.busy = false;
+    this.audio.currentTime = 0;
 };
 
-Channel.prototype.toggle = function Channel$toggle() {
-    if (this.playing) {
-        this.stop();
-    }
-    else {
-        this.audio.currentTime = 0;
-        this.play();
-    }
+
+channel.prototype.play = function (src, loop) {
+
+    if (this.autoRelease && this.busy) return false;
+
+    if (src)
+        this.audio.src = src;
+    this.audio.loop = !!loop;
+    this.audio.play();
+    console.log("play " + this.audio.src);
+
+    return true;
+
 };
