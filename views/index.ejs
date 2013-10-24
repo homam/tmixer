@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script type="text/javascript" src="js/libs/jquery-1.7.js"></script>
+    <script type="text/javascript" src="js/libs/EventTarget.js"></script>
+    <script type="text/javascript" src="js/toneBox.js"></script>
+    <script type="text/javascript" src="js/channel.js"></script>
+    <script type="text/javascript" src="js/channelsPool.js"></script>
+    <script type="text/javascript" src="js/column.js"></script>
+    <script type="text/javascript" src="js/matrix.js"></script>
+    
+    <style type="text/css">
+        #matrix {
+            width: 800px;
+            height: 600px;
+            outline: solid 2px black;
+            margin: auto;
+            position: relative;
+        }
+
+            #matrix button {
+                outline: solid 1px gray;
+                border: 0;
+                position: absolute;
+            }
+
+                #matrix button.playing {
+                    outline: solid 1px red;
+                }
+
+                #matrix button.active {
+                    background-color:  green;
+                }
+    </style>
+</head>
+<body>
+    <div id="matrix">
+
+    </div>
+    <div>
+        Speed: <input type="range" min="0" max="1" step=".05" value=".5" id="speedRange"  />
+    </div>
+    <div>
+        <button onclick="toneMatrix.toggle()">Toggle</button>
+    </div>
+    <div>
+        Size: <input type="range" min="10" max="30" step="1" value="10" id="sizeRange" />
+    </div>
+    
+    <script type="text/javascript">
+        $(function () {
+
+            $("#sizeRange").change(function () {
+                var target = $("#sizeRange");
+                var val = parseInt( target.val());
+                console.log("reisze to ", val);
+                toneMatrix.resize(val);
+            });
+
+            $("#speedRange").change(function () {
+                var target = $("#speedRange");
+                toneMatrix.speed = parseFloat(target.val());
+            });
+
+            toneMatrix = new Matrix(10, 16, 'tr808');
+
+            (function() {
+                var oldCol = null;
+                toneMatrix.events.addEventListener('column-play-started', function (ev) {
+                    var col = ev.column;
+                    if (oldCol != null)
+                        oldCol.removeClass('playing');
+                    oldCol = $("#matrix button.col-" + col);
+                    oldCol.addClass('playing');
+                });
+            })();
+
+            toneMatrix.events.addEventListener('box-active-state-changed', function (ev) {
+                var col = ev.col;
+                var row = ev.row;
+                var target = $('#matrix button.col-' + ev.col + '.row-' + ev.row);
+                if (ev.active) {
+                    target.addClass('active');
+                } else {
+                    target.removeClass('active');
+                }
+            });
+
+            toneMatrix.events.addEventListener('matrix-resized', function (ev) {
+                var diff = ev.current.col - ev.old.col;
+                console.log(ev.current.col , ev.old.col);
+                if (diff > 0) {
+                    for (var i = 0; i < diff; i++) {
+                        addColumnUI(i + ev.old.col);
+                    }
+                } else {
+                    for (var i = 0; i >= diff; i--) {
+                        removeColumnUIFromRight(ev.old.col+i);
+                    }
+                }
+            });
+
+            var removeColumnUIFromRight = (function () {
+
+                var matrix = $("#matrix");
+
+                return function (index) {
+
+                   // console.log(index);
+                    matrix.find("button.col-" + index).remove();
+                };
+
+            })();
+
+            var addColumnUI = (function () {
+
+                var matrix = $("#matrix");
+                var width = matrix.width();
+                var height = matrix.height();
+                var notesCount = toneMatrix.notes;
+                var noteHeight = height / notesCount;
+                var noteWidth = noteHeight;
+
+                return function (i) { // i = column (step) index
+
+                    for (var j = 0; j < notesCount; j++) {
+                        var top = j * noteHeight;
+                        var left = i * noteWidth;
+                        var tone = $("<button></button>");
+                        tone.css("top", top + "px");
+                        tone.css("left", left + "px");
+                        tone.height(noteHeight);
+                        tone.width(noteWidth);
+
+                        tone.attr('data-row', j);
+                        tone.attr('data-col', i);
+                        tone.addClass('col-' + i);
+                        tone.addClass('row-' + j);
+
+                        tone.click(function (ev) {
+                            var target = $(ev.target);
+                            var row = parseInt(target.attr('data-row'));
+                            var col = parseInt(target.attr('data-col'));
+
+                            toneMatrix.toggleBoxActiveState(row, col);
+                        });
+                        matrix.append(tone);
+                    }
+                };
+            })();
+
+            (function () {
+
+                var stepsCount = toneMatrix.steps;
+                for (var i = 0; i < stepsCount; i++) {
+                    addColumnUI(i);
+                }
+
+            })();
+        });
+    </script>
+</body>
+</html>
